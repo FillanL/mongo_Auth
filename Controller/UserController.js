@@ -51,7 +51,7 @@ exports.logIn = async(req,res) =>{
                     },
                     process.env.LOG_SECRET,
                     {
-                        expiresIn:'1h'
+                        expiresIn:'30s'
                     }
                 )
     
@@ -81,6 +81,7 @@ exports.logIn = async(req,res) =>{
                     'jit', refreshToken, {
                     httpOnly:true
                 })
+                console.log(res.cookie['jit'], res.cookies)
     
                 res.status(200).json({
                     "message":'user auth',
@@ -93,8 +94,6 @@ exports.logIn = async(req,res) =>{
         res.status(401).json({"error":error})
     }
 }
-
-
 
 exports.findUserById = async(req,res) =>{
     const {userId} = req.body

@@ -5,6 +5,7 @@ require('dotenv').config()
 
 exports.genRefreshToken = async(req,res) =>{
     const refreshCookie  = req.cookies['jit']
+    console.log(refreshCookie, "cookie")
 
     try {
         if(!refreshCookie) throw Error('no refresh Token, need to sign in')
@@ -35,7 +36,7 @@ exports.genRefreshToken = async(req,res) =>{
                 },
                 process.env.LOG_SECRET,
                 {
-                    expiresIn:'1h'
+                    expiresIn:'20s'
                 }
             )
             const dummyToken = jwt.sign(
@@ -48,8 +49,10 @@ exports.genRefreshToken = async(req,res) =>{
                     expiresIn:'7d'
                 }
             )
-            res.cookie('hashed', dummyToken)
-            res.cookie('jit',refreshToken)
+            
+            res.cookie('hashed', dummyToken, {maxAge: 9000000000, httpOnly: true, secure: true })
+            res.cookie('jit',refreshToken, {maxAge: 9000000000, httpOnly: true, secure: true })
+
             res.status(200).json({
                 "accessToken": accessToken,
                 "message":'user auth'
@@ -61,4 +64,9 @@ exports.genRefreshToken = async(req,res) =>{
         res.status(401).send({"error":error})
     }
 
+}
+exports.validAuth = async(req,res) =>{
+    console.log(req.userData)
+    if(req.userData) return res.status(200).send({"isAuth":true})
+    // req.userData
 }
